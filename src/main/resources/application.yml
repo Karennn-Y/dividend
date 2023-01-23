@@ -21,3 +21,16 @@ spring:
     username: sa
     password:
 
+  redis:
+    host: localhost
+    port: 6379
+
+  jwt:
+    secret: emVyb2Jhc2Utc3ByaW5nLWJvb3QtZGl2aWRlbmQtcHJvamVjdC1qd3Qtc2VjcmV0LWtleQo=
+
+
+
+scheduler:
+  scrap:
+    yahoo: "0 0 0 * * *"
+

@@ -1,6 +1,8 @@
 package com.zerobase.dividend.service;
 
 
+import com.zerobase.dividend.exception.impl.AlreadyExistCompanyException;
+import com.zerobase.dividend.exception.impl.NoCompanyException;
 import com.zerobase.dividend.model.Company;
 import com.zerobase.dividend.model.ScrapedResult;
 import com.zerobase.dividend.persist.CompanyRepository;
@@ -11,15 +13,19 @@ import com.zerobase.dividend.scraper.Scraper;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections4.Trie;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+
 
 @Service
 @AllArgsConstructor
 public class CompanyService {
 
+	private final Trie trie;
 	private final Scraper yahooFinanceScraper;
 	private final CompanyRepository companyRepository;
 	private final DividendRepository dividendRepository;
@@ -28,7 +34,7 @@ public class CompanyService {
 		boolean exists = this.companyRepository.existsByTicker(ticker);
 
 		if (exists) {
-			throw new RuntimeException("already exists ticker -> " + ticker);
+			throw new AlreadyExistCompanyException();
 		}
 		return this.storeCompanyAndDividend(ticker);
 	}
@@ -55,5 +61,43 @@ public class CompanyService {
 
 		this.dividendRepository.saveAll(dividendEntityList);
 		return company;
+	}
+
+	public List<String> getCompanyNamesByKeyword(String keyword) {
+		Pageable limit = PageRequest.of(0, 10);
+		Page<CompanyEntity> companyEntities = this.companyRepository.findByNameStartingWithIgnoreCase(keyword, limit);
+		return companyEntities.stream()
+					.map(e -> e.getName())
+					.collect(Collectors.toList());
+	}
+
+	// 자동완성
+	public void addAutocompleteKeyword(String keyword) {
+		this.trie.put(keyword, null);
+	}
+	// 자동완성으로 회사찾기
+	public List<String> autocomplete(String keyword) {
+		return (List<String>) this.trie.prefixMap(keyword).keySet()
+			.stream()
+//			.limit(10) // 데이터가 많은 경우
+			.collect(Collectors.toList());
+	}
+
+	// 트라이에 저장된 키워드 삭제
+	public void	deleteAutocompleteKeyword(String keyword) {
+		this.trie.remove(keyword);
+	}
+
+	public String deleteCompany(String ticker) {
+		var company = this.companyRepository.findByTicker(ticker)
+											.orElseThrow(() -> new NoCompanyException());
+		// 배당금정보 삭제
+		this.dividendRepository.deleteAllByCompanyId(company.getId());
+		// 회사 정보 삭제
+		this.companyRepository.delete(company);
+		// trie 안에있는 회사 이름 삭제
+		this.deleteAutocompleteKeyword(company.getName());
+
+		return company.getName();
 	}
 }
