@@ -1,14 +1,14 @@
 # DIVIDENED PROJECT (배당금 조회 프로젝트)
 ## Table of contents
 * [ABOUT THE PROJECT](#about-the-project)
-* [Technologies](#technologies)
+* [BUILD WITH](#build-with)
 * [API](#api)
 ## ABOUT THE PROJECT
 - 미국 주식 배당금 정보를 제공하는 API 서비스를 개발합니다.
   - 웹 페이지를 분석하고 스크래핑 기법을 활용하여 필요한 데이터를 추출/저장합니다. (https://finance.yahoo.com/ 사용)
   - 사용자별 데이터를 관리하고 예상 배당금 액수를 계산할 수 있습니다.
   - 서비스에서 캐시의 필요성을 이해하고 캐시 서버를 구성합니다.
-### BUILD WITH
+## BUILD WITH
 - SpringBoot v 2.5.6
 - redis
 - H2
