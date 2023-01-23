@@ -18,7 +18,7 @@
 - Spring Security
 - Docker
 ## API
-###/company
+### /company
 
 - Post : "/company"
   - ticker를 입력받아 회사 정보를 추가
@@ -37,13 +37,13 @@
   - ticker 에 해당하는 회사 정보 삭제 
   - 'WRITE' role 이 있는 유저만 삭제 가능
 
-###/finance
+### /finance
 
 - Get : "/finance/dividend/{companyName}
   - 회사명으로 해당 회사 배당금 정보 조회
   - 잘못된 회사명일 경우 error 반환(400, "존재하지 않는 회사명 입니다.")
 
-###/auth
+### /auth
 
 - Post : "/auth/signup"
   - "username", "password", "roles" (-> List type) 를 입력받아 회원가입
