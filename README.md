@@ -16,7 +16,6 @@
 - jsoup
 - JWT
 - Spring Security
-- Docker
 ## API
 ### /company
 
